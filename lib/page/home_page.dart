@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meeting_copilot_flutter/handler/record_handler.dart';
 import 'package:meeting_copilot_flutter/worker/gemini_worker.dart';
-import 'package:meeting_copilot_flutter/worker/record_worker.dart';
 
 import '../component/conversation_block.dart';
 import '../entity/conversation.dart';
@@ -25,9 +25,9 @@ class _HomePageState extends State<HomePage> {
 
   late final GeminiWorker _geminiWorker;
 
-  late final RecordWorker _recordWorker;
-
   List<String> _deviceLabels = [];
+
+  late final RecordHandler _recordHandler;
 
   String _selectedDevice = '';
 
@@ -37,12 +37,13 @@ class _HomePageState extends State<HomePage> {
     _conversationController = ScrollController();
     _inputFocusNode = FocusNode();
 
-    RecordWorker.listDevices().then((devices) {
-      setState(() {
-        _deviceLabels = devices.map((device) => device.label).toList();
-        _selectedDevice = _deviceLabels.first;
-      });
-    });
+    _recordHandler = RecordHandler();
+    _recordHandler.listDevices().then((devices) => {
+          setState(() {
+            _deviceLabels = devices.map((device) => device.label).toList();
+            _selectedDevice = _deviceLabels.first;
+          })
+        });
 
     GeminiWorker.spawn([]).then((worker) => {
           _geminiWorker = worker,
@@ -168,6 +169,13 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _recordHandler.startRecord(_selectedDevice);
+        },
+        child: const Icon(Icons.mic),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
     );
   }
 
