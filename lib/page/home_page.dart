@@ -31,6 +31,8 @@ class _HomePageState extends State<HomePage> {
 
   String _selectedDevice = '';
 
+  bool _isRecording = false;
+
   @override
   void initState() {
     _inputController = TextEditingController();
@@ -170,8 +172,14 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _recordHandler.startRecord(_selectedDevice);
+        onPressed: () async {
+          if (_isRecording) {
+            await _recordHandler.stopRecord();
+            _isRecording = false;
+            return;
+          }
+          await _recordHandler.startRecord(_selectedDevice);
+          _isRecording = true;
         },
         child: const Icon(Icons.mic),
       ),

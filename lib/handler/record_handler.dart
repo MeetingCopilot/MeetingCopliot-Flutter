@@ -31,6 +31,10 @@ class RecordHandler {
         });
   }
 
+  Future<void> stopRecord() async {
+    await _audioRecorder.stop();
+  }
+
   void _sendToServer(Uint8List data) {
     print(data);
   }
