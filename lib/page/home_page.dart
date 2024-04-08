@@ -143,7 +143,14 @@ class _HomePageState extends State<HomePage> {
                               size: 36,
                             ),
                             onPressed: () {
-                              debugPrint('onPressed');
+                              _geminiWorker.pushDeer(
+                                Conversation(
+                                  question: _inputController.text,
+                                  answer: '',
+                                ),
+                              );
+                              _inputController.clear();
+                              _inputFocusNode.requestFocus();
                             },
                           ),
                         ),

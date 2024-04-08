@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:isolate';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:meeting_copilot_flutter/entity/conversation.dart';
+import 'package:http/http.dart' as http;
 
 class GeminiWorker {
   final ReceivePort _responses;
@@ -69,6 +71,7 @@ class GeminiWorker {
     } else {
       completer.complete(response);
       _conversation.sink.add(response!);
+      pushDeer(response);
     }
 
     if (_closed && _activeRequests.isEmpty) {
@@ -132,5 +135,20 @@ class GeminiWorker {
     );
 
     return model.startChat(history: _history);
+  }
+
+  void pushDeer(Conversation conversation) {
+    http.post(
+      Uri.parse(
+          'https://sctapi.ftqq.com/SCT9930TJ8uvJQfG1nCpxMrEcgl9XcwA.send'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'title': conversation.question,
+        'desp': conversation.answer,
+        'channel': '18',
+      }),
+    );
   }
 }
